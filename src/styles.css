@@ -352,11 +352,11 @@
 	color: color-mix(in oklab, var(--destructive) 90%, transparent);
 }
 
-[data-slot='alert-description'] > p {
+[data-slot='alert'] > [data-slot='alert-description'] > p {
 	margin: 0;
 }
 
-[data-slot='alert-description'] > p:not(:last-child) {
+[data-slot='alert'] > [data-slot='alert-description'] > p:not(:last-child) {
 	margin-bottom: 1rem;
 }
 
