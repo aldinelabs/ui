@@ -7,8 +7,10 @@ It ships **source** (`.astro` and `.ts` files), so a site builds it together wit
 ## Install
 
 ```sh
-bun add @aldine/ui@github:aldinelabs/ui#v0.1.0
+bun add @aldine/ui@github:aldinelabs/ui#main
 ```
+
+Bun records the exact commit in `bun.lock`, so builds stay reproducible; update with `bun update @aldine/ui`. To pin by hand, use a commit hash instead of `main`. Bun 1.3.4 cannot resolve git tags in this form (it requests the tag from GitHub and gets a 404), so don't install by tag name.
 
 Peer dependencies (install them in the site): `astro`, `tailwindcss`, `@tailwindcss/vite`, `@lucide/astro`, `@fontsource-variable/inter`, `@fontsource-variable/jetbrains-mono`.
 
