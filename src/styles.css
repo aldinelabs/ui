@@ -202,11 +202,11 @@
 		color: var(--muted-foreground);
 	}
 
+	/* shadcn-vue's Typography blockquote: border-l-2 pl-6 italic. */
 	& blockquote {
-		border-left: 2px solid var(--foreground);
-		padding-left: 1.25rem;
-		font-size: 1.25rem;
-		line-height: 1.5;
+		border-left: 2px solid var(--border);
+		padding-left: 1.5rem;
+		font-style: italic;
 
 		& p {
 			margin-block: 0.5rem;
