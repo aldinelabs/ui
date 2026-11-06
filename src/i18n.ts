@@ -42,6 +42,8 @@ const strings = {
 		system: 'System',
 		dark: 'Dark',
 		themeLabel: (name: string) => `${name} theme`,
+		copy: 'Copy code',
+		copied: 'Copied',
 	},
 	zh: {
 		home: 'Aldine 首页',
@@ -54,6 +56,8 @@ const strings = {
 		system: '跟随系统',
 		dark: '深色',
 		themeLabel: (name: string) => `${name}主题`,
+		copy: '复制代码',
+		copied: '已复制',
 	},
 };
 

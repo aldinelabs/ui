@@ -31,7 +31,7 @@ const text = chrome(locale);
 		<BaseHead {...head} alternates={alternates} />
 		<slot name="head" />
 	</head>
-	<body class="flex min-h-svh flex-col">
+	<body class="flex min-h-svh flex-col" data-copy-label={text.copy} data-copied-label={text.copied}>
 		<a
 			href="#main"
 			class="sr-only z-50 rounded-2xl bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
@@ -47,6 +47,42 @@ const text = chrome(locale);
 		<Footer {...footer} logo={footer.logo ?? logo} />
 		<slot name="overlays" />
 		<script>
+			// A copy button on every code block in long-form text.
+			const icons = {
+				copy: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+				done: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+			};
+			const { copyLabel = 'Copy code', copiedLabel = 'Copied' } = document.body.dataset;
+			document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+				const wrapper = document.createElement('div');
+				wrapper.className = 'code-block';
+				pre.replaceWith(wrapper);
+				wrapper.append(pre);
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'code-copy';
+				button.setAttribute('aria-label', copyLabel);
+				button.title = copyLabel;
+				button.innerHTML = icons.copy;
+				let timer: number | undefined;
+				button.addEventListener('click', async () => {
+					try {
+						await navigator.clipboard.writeText(pre.innerText.replace(/\n$/, ''));
+					} catch {
+						return;
+					}
+					button.innerHTML = icons.done;
+					button.setAttribute('aria-label', copiedLabel);
+					button.title = copiedLabel;
+					clearTimeout(timer);
+					timer = window.setTimeout(() => {
+						button.innerHTML = icons.copy;
+						button.setAttribute('aria-label', copyLabel);
+						button.title = copyLabel;
+					}, 1800);
+				});
+				wrapper.append(button);
+			});
 			document.addEventListener('keydown', (event) => {
 				if (event.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => d.removeAttribute('open'));
 			});

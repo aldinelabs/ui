@@ -233,6 +233,16 @@
 		font-size: 0.85em;
 	}
 
+	& .code-block {
+		position: relative;
+		margin-block: 1.5rem;
+
+		& pre {
+			margin: 0;
+			padding-right: 3.5rem;
+		}
+	}
+
 	& pre {
 		overflow-x: auto;
 		border-radius: var(--radius-2xl);
@@ -361,4 +371,43 @@
 
 .prose [data-slot='alert'] {
 	margin-block: 1.5rem;
+}
+
+/* Copy button on code blocks (see layouts/Base.astro): shadcn-vue's ghost icon button. */
+.code-copy {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: var(--radius-xl);
+	background: var(--muted);
+	color: var(--muted-foreground);
+	opacity: 0;
+	transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.code-block:hover .code-copy,
+.code-copy:focus-visible {
+	opacity: 1;
+}
+
+.code-copy:hover {
+	background: var(--accent);
+	color: var(--foreground);
+}
+
+.code-copy:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent);
+}
+
+/* No hover on touch screens: keep the button visible. */
+@media (hover: none) {
+	.code-copy {
+		opacity: 1;
+	}
 }
