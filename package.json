@@ -13,7 +13,10 @@
     "./ui": "./src/ui.ts",
     "./layouts/*.astro": "./src/layouts/*.astro",
     "./components/*.astro": "./src/components/*.astro",
-    "./plugins/*.mjs": "./src/plugins/*.mjs"
+    "./plugins/rehype-alerts.mjs": {
+      "types": "./src/plugins/rehype-alerts.d.mts",
+      "default": "./src/plugins/rehype-alerts.mjs"
+    }
   },
   "peerDependencies": {
     "@fontsource-variable/inter": ">=5",
