@@ -55,3 +55,7 @@ The site must provide `/brand/logo-dark.svg` and `/brand/logo-light.svg` (or pas
 | `@aldine/ui/styles.css` | Theme tokens, base styles, `.prose` (imported by `BaseHead`) |
 
 Every locale is served under its own prefix (`/en/…`, `/zh/…`).
+
+## Components follow shadcn-vue
+
+Anything added here mirrors the structure, class recipe and tokens of the matching shadcn-vue component, so sites look like Pine. For example, `@aldine/ui/plugins/rehype-alerts.mjs` turns GitHub-style callouts (`> [!NOTE]`) in Markdown into shadcn-vue's Alert (icon, title, description; `destructive` for WARNING / CAUTION), and `styles.css` styles `[data-slot="alert"]`. Do not hand-roll a bespoke look; check the shadcn-vue source first.

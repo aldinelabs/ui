@@ -1,15 +1,19 @@
 {
   "name": "@aldine/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared Astro layout, header, footer and theme for Aldine Labs sites.",
   "type": "module",
-  "files": ["src", "README.md"],
+  "files": [
+    "src",
+    "README.md"
+  ],
   "exports": {
     "./styles.css": "./src/styles.css",
     "./i18n": "./src/i18n.ts",
     "./ui": "./src/ui.ts",
     "./layouts/*.astro": "./src/layouts/*.astro",
-    "./components/*.astro": "./src/components/*.astro"
+    "./components/*.astro": "./src/components/*.astro",
+    "./plugins/*.mjs": "./src/plugins/*.mjs"
   },
   "peerDependencies": {
     "@fontsource-variable/inter": ">=5",
