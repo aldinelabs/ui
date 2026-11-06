@@ -1,0 +1,59 @@
+---
+import Monitor from '@lucide/astro/icons/monitor';
+import Moon from '@lucide/astro/icons/moon';
+import Sun from '@lucide/astro/icons/sun';
+
+import { chrome, localeFromUrl } from '../i18n';
+
+const text = chrome(localeFromUrl(Astro.url));
+const options = [
+	{ value: 'light', label: text.light, icon: Sun },
+	{ value: 'system', label: text.system, icon: Monitor },
+	{ value: 'dark', label: text.dark, icon: Moon },
+];
+---
+
+<div
+	role="radiogroup"
+	aria-label={text.theme}
+	data-theme-toggle
+	class="h-8 items-center rounded-full bg-muted p-0.5 text-muted-foreground hidden in-[.js]:inline-flex"
+>
+	{
+		options.map(({ value, label, icon: Icon }) => (
+			<button
+				type="button"
+				role="radio"
+				aria-label={text.themeLabel(label)}
+				title={label}
+				data-value={value}
+				class="inline-flex size-7 items-center justify-center rounded-full outline-none transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30 aria-checked:bg-card aria-checked:text-foreground aria-checked:shadow-sm dark:aria-checked:bg-input/50"
+			>
+				<Icon class="size-3.5" aria-hidden="true" />
+			</button>
+		))
+	}
+</div>
+<script is:inline>
+	document.currentScript.previousElementSibling.querySelectorAll('button').forEach((b) =>
+		b.setAttribute('aria-checked', String(b.dataset.value === (document.documentElement.dataset.theme || 'system'))),
+	);
+</script>
+
+<script>
+	const sync = () => {
+		const current = document.documentElement.dataset.theme ?? 'system';
+		document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((group) => {
+			group.querySelectorAll<HTMLButtonElement>('button').forEach((button) => {
+				button.setAttribute('aria-checked', String(button.dataset.value === current));
+			});
+		});
+	};
+	document.addEventListener('click', (event) => {
+		const button = (event.target as Element).closest<HTMLButtonElement>('[data-theme-toggle] button');
+		if (!button) return;
+		(window as unknown as { __setTheme: (v: string) => void }).__setTheme(button.dataset.value ?? 'system');
+		sync();
+	});
+	sync();
+</script>

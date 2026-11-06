@@ -1,0 +1,127 @@
+---
+import Languages from '@lucide/astro/icons/languages';
+import Menu from '@lucide/astro/icons/menu';
+import Search from '@lucide/astro/icons/search';
+import { chrome, languageName, localeFromUrl, localize, locales, type Locale } from '../i18n';
+import { button, container } from '../ui';
+import Logo from './Logo.astro';
+
+interface NavLink {
+	href: string;
+	label: string;
+	active?: boolean;
+}
+
+interface Props {
+	/** This page in each locale; a locale without an entry links to that locale's home page. */
+	alternates: Partial<Record<Locale, string>>;
+	links: NavLink[];
+	/** Search button; omit it for a site without search. Add `data-search-trigger` handling in the site. */
+	search?: { href: string; label: string; title?: string };
+	/** Logo files, when the site keeps them elsewhere than `/brand/`. */
+	logo?: { light?: string; dark?: string; alt?: string };
+}
+
+const { alternates, links, search, logo } = Astro.props;
+const locale = localeFromUrl(Astro.url);
+const text = chrome(locale);
+// Switch to the other language: this page's translation, or that language's home page.
+const others = locales
+	.filter((l) => l !== locale)
+	.map((l) => ({ locale: l, label: languageName[l], href: alternates[l] ?? localize('/', l) }));
+---
+
+<script>
+	// A language picked by hand is remembered for later visits (see BaseHead).
+	document.addEventListener('click', (event) => {
+		const link = (event.target as Element).closest<HTMLElement>('[data-locale-switch]');
+		if (!link) return;
+		try {
+			localStorage.setItem('locale', link.dataset.localeSwitch ?? '');
+		} catch {}
+	});
+</script>
+
+<header class="sticky top-0 z-40 bg-background/85 backdrop-blur-md">
+	<div class:list={[container, 'flex h-16 items-center gap-6']}>
+		<a href={localize('/', locale)} aria-label={text.home} class="-ml-1 flex rounded-lg p-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/30">
+			<Logo class="h-7" {...logo} />
+		</a>
+
+		<nav aria-label="Main" class="hidden flex-1 items-center gap-0.5 sm:flex">
+			{
+				links.map(({ href, label, active }) => (
+					<a
+						href={href}
+						aria-current={active ? 'page' : undefined}
+						class:list={[button.ghost, active ? 'text-foreground' : 'text-foreground/65 hover:text-foreground']}
+					>
+						{label}
+					</a>
+				))
+			}
+		</nav>
+
+		<div class="ml-auto flex items-center gap-1">
+			{
+				search && (
+					<a href={search.href} data-search-trigger aria-label={search.label} title={search.title ?? search.label} class={button.icon}>
+						<Search aria-hidden="true" />
+					</a>
+				)
+			}
+			{
+				others.map((other) => (
+					<a
+						href={other.href}
+						hreflang={other.locale}
+						data-locale-switch={other.locale}
+						lang={other.locale}
+						aria-label={`${text.language}: ${other.label}`}
+						class:list={[button.ghost, 'max-sm:hidden']}
+					>
+						<Languages class="size-3.5" aria-hidden="true" />
+						{other.label}
+					</a>
+				))
+			}
+			<slot name="actions" />
+			<details class="group/menu relative sm:hidden">
+				<summary aria-label={text.menu} class:list={[button.icon, 'list-none group-open/menu:bg-muted [&::-webkit-details-marker]:hidden']}>
+					<Menu aria-hidden="true" />
+				</summary>
+				<nav
+					aria-label="Mobile"
+					class="absolute top-10 right-0 flex w-52 flex-col gap-0.5 rounded-3xl bg-popover p-1.5 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10"
+				>
+					{
+						links.map(({ href, label, active }) => (
+							<a
+								href={href}
+								aria-current={active ? 'page' : undefined}
+								class="flex h-9 items-center rounded-2xl px-3 outline-none hover:bg-accent focus-visible:bg-accent aria-[current=page]:font-medium"
+							>
+								{label}
+							</a>
+						))
+					}
+					{
+						others.map((other) => (
+							<a
+								href={other.href}
+								hreflang={other.locale}
+								data-locale-switch={other.locale}
+								lang={other.locale}
+								class="flex h-9 items-center gap-2 rounded-2xl px-3 outline-none hover:bg-accent focus-visible:bg-accent"
+							>
+								<Languages class="size-3.5" aria-hidden="true" />
+								{other.label}
+							</a>
+						))
+					}
+					<slot name="menu" />
+				</nav>
+			</details>
+		</div>
+	</div>
+</header>

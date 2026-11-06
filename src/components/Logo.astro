@@ -1,0 +1,16 @@
+---
+interface Props {
+	class?: string;
+	/** Logo for light backgrounds. Not bundled with this package; the site provides it. */
+	light?: string;
+	/** Logo for dark backgrounds. */
+	dark?: string;
+	alt?: string;
+}
+const { class: className = 'h-6', light = '/brand/logo-dark.svg', dark = '/brand/logo-light.svg', alt = 'Aldine' } = Astro.props;
+---
+
+<span class:list={['flex', className]}>
+	<img src={light} alt={alt} class="h-full w-auto dark:hidden" width="122" height="40" />
+	<img src={dark} alt={alt} class="hidden h-full w-auto dark:block" width="122" height="40" />
+</span>

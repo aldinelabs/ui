@@ -1,0 +1,59 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { chrome, languageTag, locales, localeFromUrl, localize, unlocalize, type Locale } from '../i18n';
+
+type HeadProps = Parameters<typeof BaseHead>[0];
+type HeaderProps = Parameters<typeof Header>[0];
+type FooterProps = Parameters<typeof Footer>[0];
+
+interface Props extends Omit<HeadProps, 'alternates'> {
+	/** This page in each locale; defaults to the same path in every locale. Omit a locale with no translation. */
+	alternates?: Partial<Record<Locale, string>>;
+	nav: HeaderProps['links'];
+	search?: HeaderProps['search'];
+	footer: FooterProps;
+	logo?: HeaderProps['logo'];
+}
+
+const { alternates: given, nav, search, footer, logo, ...head } = Astro.props;
+const locale = localeFromUrl(Astro.url);
+const path = unlocalize(Astro.url.pathname);
+const alternates = given ?? Object.fromEntries(locales.map((l) => [l, localize(path, l)]));
+const text = chrome(locale);
+---
+
+<!doctype html>
+<html lang={languageTag[locale]}>
+	<head>
+		<BaseHead {...head} alternates={alternates} />
+		<slot name="head" />
+	</head>
+	<body class="flex min-h-svh flex-col">
+		<a
+			href="#main"
+			class="sr-only z-50 rounded-2xl bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+			>{text.skip}</a
+		>
+		<Header alternates={alternates} links={nav} search={search} logo={logo}>
+			<slot name="header-actions" slot="actions" />
+			<slot name="header-menu" slot="menu" />
+		</Header>
+		<main id="main" class="flex-1">
+			<slot />
+		</main>
+		<Footer {...footer} logo={footer.logo ?? logo} />
+		<slot name="overlays" />
+		<script>
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => d.removeAttribute('open'));
+			});
+			document.addEventListener('click', (event) => {
+				document.querySelectorAll('details[open]').forEach((d) => {
+					if (!d.contains(event.target as Node)) d.removeAttribute('open');
+				});
+			});
+		</script>
+	</body>
+</html>
